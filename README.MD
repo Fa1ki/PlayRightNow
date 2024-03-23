@@ -1,5 +1,7 @@
 # Spotify OBS Widget
 
+Original created by [Ponywka](https://github.com/Ponywka/Spotify-OBS-Widget)
+
 ## ENGLISH
 
 Before launch its mandatory to install Node.JS, follow this link: https://nodejs.org/
