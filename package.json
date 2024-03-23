@@ -1,0 +1,22 @@
+{
+    "name": "executable",
+    "bin": "app.js",
+    "version": "1.0.0",
+    "description": "Simple express app",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "pkg": {
+        "assets":  "views/**/*",
+        "targets": [ "node18-win-x64" ],
+        "output": "dist"
+    },
+    "keywords": [],
+    "author": "Ponywka and Jeremias(Falke)",
+    "license": "ISC",
+    "dependencies": {
+        
+    }
+}

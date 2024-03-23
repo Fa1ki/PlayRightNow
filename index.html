@@ -1,0 +1,149 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <title>SpotifyNowPlaying</title>
+    <style>
+      * {
+        color-scheme: dark;
+      }
+      body {
+        background-color: rgba(0, 0, 0, 0);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-weight: 600;
+        margin: 25px;
+        display: flex;
+        align-items: center;
+      }
+
+      #artistname {
+        font-weight: 200;
+        font-size: 25px;
+      }
+
+      #spotifyrightnow {
+        position: relative;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 20px;
+        overflow: hidden;
+        height: 128px;
+        width: 100%;
+        border: 2px solid rgba(0, 0, 0, 0.9);
+        box-shadow: 7px 5px 5px rgba(0, 0, 0, 0.6);
+        box-sizing: border-box;
+        transition: opacity 0.7s;
+      }
+
+      #albumlabel {
+        position: relative;
+        top: -1px;
+        left: -1px;
+        width: 128px;
+        height: 128px;
+        border-radius: 16px 0px 0px 16px;
+      }
+
+      #songinfo {
+        position: absolute;
+        top: -1px;
+        left: 127px;
+        line-height: 48px;
+        font-size: 36px;
+        color: rgba(255, 255, 255, 0.9);
+        padding: 16px 24px;
+        overflow: hidden;
+        width: calc(100% - 128px);
+        box-sizing: border-box;
+      }
+
+      #songinfo > div {
+        width: max-content;
+        will-change: transform;
+        transition: 5s;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let songnameanim, artistnameanim;
+        //Animation
+        const animateText = (obj, maxwidth) => {
+          //Stop animation
+          obj.css("transition", "unset");
+          obj.css("transform", "");
+          //If name width more than block width
+          if (maxwidth < obj.width()) {
+            //Restore animation
+            obj.css("transition", "");
+            let position = false;
+            let animate = setInterval(() => {
+              console.log("tik");
+              if (!position) {
+                obj.css(
+                  "transform",
+                  "translateX(-" + (obj.width() - maxwidth) + "px)"
+                );
+              } else {
+                obj.css("transform", "translateX(0px)");
+              }
+              position = !position;
+            }, 6000);
+            return animate;
+          } else {
+            return null;
+          }
+        };
+        const animateTextStop = (animate) => {
+          clearInterval(animate);
+        };
+
+        let worker = setInterval(() => {
+          $.ajax({
+            url: "/getSong",
+          }).done((data) => {
+            if (data.is_playing) {
+              $("#spotifyrightnow").css("opacity", 1);
+              //Get previous names
+              let pastname = $("#songname").html();
+              let pastartistname = $("#artistname").html();
+
+              //Set current names
+              $("#albumlabel").attr("src", data.imageurl);
+              $("#songname").html(data.titlename);
+              $("#artistname").html(data.artistname);
+
+              if ($("#songname").html() != pastname) {
+                if (typeof songnameanim != "undefined")
+                  clearInterval(songnameanim);
+                songnameanim = animateText(
+                  $("#songname"),
+                  $("#songinfo").width()
+                );
+              }
+
+              if ($("#artistname").html() != pastartistname) {
+                if (typeof artistnameanim != "undefined")
+                  clearInterval(artistnameanim);
+                artistnameanim = animateText(
+                  $("#artistname"),
+                  $("#songinfo").width()
+                );
+              }
+            } else {
+              $("#spotifyrightnow").css("opacity", 0);
+            }
+          });
+        }, 500);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="spotifyrightnow">
+      <img id="albumlabel" alt="" src="/public/image.png"/>
+      <div id="songinfo">
+        <div id="songname">Songname</div>
+        <div id="artistname">Artistname</div>
+      </div>
+    </div>
+  </body>
+</html>
